@@ -21,7 +21,7 @@ local response = KeySystem:Init({
 
 if response and KeyValid then
     -- Eğer key doğrulandıysa, ikinci script'i yükle
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/Mangnex/Lunar-Hub/refs/heads/main/FreeLoader"))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/NEXINRUS/NexinScripts/refs/heads/main/PalaceBypasser/Script.lua"))()
 else
     warn("WRONG KEY BRONIDE!")
 end
