@@ -1,0 +1,300 @@
+--==[ Load Rayfield UI ]==--
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+--==[ Create Window ]==--
+local Window = Rayfield:CreateWindow({
+    Name = "AnimeWare Hub",
+    LoadingTitle = "Hehe Boi :3",
+    LoadingSubtitle = "Made by chinjungxx",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = nil, -- Save file in workspace if nil
+        FileName = "MD_SFT_Hub_Config"
+    },
+    Discord = { -- Optional Discord Invite
+        Enabled = true,
+        Invite = "discord.gg/dgNSwK2rK5", -- Your discord server invite
+        RememberJoins = true
+    },
+    KeySystem = false, -- Disable annoying key systems
+    Logo = 9605261863, -- ğŸ›‘ YOUR LOGO AS IMAGE ID (replace this ID with your real asset)
+    Theme = "Dark",
+    Settings = {
+        Background = 2929919985, -- Cool background
+        TileSize = 100,
+        BackgroundColor = Color3.fromRGB(15, 15, 15),
+        Font = Enum.Font.GothamBold,
+        Topbar = true,
+    },
+})
+
+--==[ Create Tabs ]==--
+local changeLogTab = Window:CreateTab("ğŸ“œ Change Log")
+local farmingTab = Window:CreateTab("ğŸŒ¾ Farming")
+local funTab = Window:CreateTab("ğŸ‰ Fun Stuff")
+local settingsTab = Window:CreateTab("âš™ï¸ Settings")
+local creditsTab = Window:CreateTab("ğŸ‘¥ Credits")
+--==[ Change Log Tab ]==--
+local changeLogSection = changeLogTab:CreateSection("Changelog")
+
+changeLogTab:CreateLabel("v1.0.0 - Initial release")
+changeLogTab:CreateLabel("v1.0.1 - Fixed bug with Auto Gem and Auto Cash functionality")
+changeLogTab:CreateLabel("v1.0.2 - Added Smart Insta-Win feature")
+changeLogTab:CreateLabel("v1.0.3 - Redone Auto Gem functionality")
+changeLogTab:CreateLabel("v1.0.4 - Miscellaneous fixes and enhancements")
+changeLogTab:CreateLabel("v1.1.0 - Fixed Some Minor Issues and some other things added")
+
+--==[ Farming Tab ]==--
+local farmingSection = farmingTab:CreateSection("Farming Scripts")
+
+_G.autoChestFarm = false
+_G.autoSpinFarm = false
+_G.infiniteDominusPet = false
+_G.instaWinLoop = false
+
+farmingTab:CreateToggle({
+    Name = "ğŸ’° Chest Auto Farm",
+    CurrentValue = false,
+    SectionParent = farmingSection,
+    Flag = "ChestFarm",
+    Callback = function(Value)
+        _G.autoChestFarm = Value
+        task.spawn(function()
+            while _G.autoChestFarm do
+                task.wait(0)
+                game:GetService("ReplicatedStorage").Remotes.TreasureEvent:FireServer("Chest")
+            end
+        end)
+    end,
+})
+
+farmingTab:CreateToggle({
+    Name = "ğŸ° Unlimited Spins",
+    CurrentValue = false,
+    SectionParent = farmingSection,
+    Flag = "SpinFarm",
+    Callback = function(Value)
+        _G.autoSpinFarm = Value
+        task.spawn(function()
+            while _G.autoSpinFarm do
+                task.wait(0.5)
+                pcall(function()
+                    game:GetService("ReplicatedStorage").Remotes.SpinPrizeEvent:FireServer(3)
+                end)
+            end
+        end)
+    end,
+})
+
+farmingTab:CreateToggle({
+    Name = "ğŸ² Auto Triple Dominus",
+    CurrentValue = false,
+    SectionParent = farmingSection,
+    Flag = "DominusFarm",
+    Callback = function(Value)
+        _G.infiniteDominusPet = Value
+        task.spawn(function()
+            while _G.infiniteDominusPet do
+                task.wait(0.0)
+                game:GetService("ReplicatedStorage").Remotes.SpinPrizeEvent:FireServer(4)
+            end
+        end)
+    end,
+})
+
+farmingTab:CreateToggle({
+    Name = "ğŸ’ Auto Gem",
+    CurrentValue = false,
+    SectionParent = farmingSection,
+    Flag = "GemFarm",
+    Callback = function(Value)
+        _G.infiniteDominusPet = Value
+        task.spawn(function()
+            while _G.infiniteDominusPet do
+                task.wait(0.0)
+                game:GetService("ReplicatedStorage").Remotes.SpinPrizeEvent:FireServer(5)
+            end
+        end)
+    end,
+})
+
+farmingTab:CreateToggle({
+    Name = "ğŸ’¸ Auto Cash",
+    CurrentValue = false,
+    SectionParent = farmingSection,
+    Flag = "CashFarm",
+    Callback = function(Value)
+        _G.infiniteDominusPet = Value
+        task.spawn(function()
+            while _G.infiniteDominusPet do
+                task.wait(0.0)
+                game:GetService("ReplicatedStorage").Remotes.SpinPrizeEvent:FireServer(8)
+            end
+        end)
+    end,
+})
+
+
+farmingTab:CreateToggle({
+    Name = "ğŸŒ Smart Insta-Win (Auto Detect World)",
+    CurrentValue = false,
+    SectionParent = farmingSection,
+    Flag = "SmartInstaWinToggle",
+    Callback = function(Value)
+        _G.instaWinLoop = Value
+        task.spawn(function()
+            local player = game.Players.LocalPlayer
+
+            while _G.instaWinLoop do
+                task.wait(0.0)
+
+                local char = player.Character or player.CharacterAdded:Wait()
+                local hrp = char:FindFirstChild("HumanoidRootPart")
+                if not hrp then continue end
+
+                local closestWinPart = nil
+                local shortestDistance = math.huge
+                local worldIndex = nil
+
+                -- Search all 10 worlds and find the closest WinPart
+                for i = 1, 10 do
+                    local world = workspace:FindFirstChild("World" .. i)
+                    if world then
+                        local winPart = world:FindFirstChild("WinPart")
+                        if winPart then
+                            local distance = (hrp.Position - winPart.Position).Magnitude
+                            if distance < shortestDistance then
+                                shortestDistance = distance
+                                closestWinPart = winPart
+                                worldIndex = i
+                            end
+                        end
+                    end
+                end
+
+                if closestWinPart then
+                    hrp.CFrame = closestWinPart.CFrame + Vector3.new(0, 8, 0)
+
+                    Rayfield:Notify({
+                        Title = "ğŸŒ Insta-Win",
+                        Content = "Teleported to World " .. tostring(worldIndex) .. " WinPart!",
+                        Duration = 2,
+                        Image = 9605261863
+                    })
+                end
+            end
+        end)
+    end,
+})
+
+--==[ Fun Features Tab ]==--
+local funSection = funTab:CreateSection("Fun Features")
+
+local infiniteJumpEnabled = false
+local noclipEnabled = false
+local flyEnabled = false
+local flySpeed = 50
+
+funTab:CreateToggle({
+    Name = "ğŸ›¸ Infinite Jump",
+    CurrentValue = false,
+    SectionParent = funSection,
+    Flag = "InfiniteJump",
+    Callback = function(Value)
+        infiniteJumpEnabled = Value
+    end,
+})
+
+game:GetService("UserInputService").JumpRequest:Connect(function()
+    if infiniteJumpEnabled then
+        local humanoid = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        end
+    end
+end)
+
+funTab:CreateToggle({
+    Name = "ğŸ‘» Noclip (Walk Through Walls)",
+    CurrentValue = false,
+    SectionParent = funSection,
+    Flag = "Noclip",
+    Callback = function(Value)
+        noclipEnabled = Value
+    end,
+})
+
+game:GetService("RunService").Stepped:Connect(function()
+    if noclipEnabled then
+        for _, part in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
+            end
+        end
+    end
+end)
+
+funTab:CreateToggle({
+    Name = "ğŸš€ Fly Mode (WASD Control)",
+    CurrentValue = false,
+    SectionParent = funSection,
+    Flag = "FlyMode",
+    Callback = function(Value)
+        flyEnabled = Value
+
+        if flyEnabled then
+            local player = game.Players.LocalPlayer
+            local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
+
+            local bodyGyro = Instance.new("BodyGyro", humanoidRootPart)
+            bodyGyro.P = 9e4
+            bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+
+            local bodyVelocity = Instance.new("BodyVelocity", humanoidRootPart)
+            bodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+
+            local connection
+            connection = game:GetService("RunService").Heartbeat:Connect(function()
+                if not flyEnabled then
+                    bodyGyro:Destroy()
+                    bodyVelocity:Destroy()
+                    connection:Disconnect()
+                    return
+                end
+
+                bodyGyro.CFrame = workspace.CurrentCamera.CFrame
+                local newVelocity = Vector3.new(0, 0, 0)
+
+                if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.W) then
+                    newVelocity = newVelocity + (workspace.CurrentCamera.CFrame.LookVector * flySpeed)
+                end
+                if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.S) then
+                    newVelocity = newVelocity - (workspace.CurrentCamera.CFrame.LookVector * flySpeed)
+                end
+                if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.A) then
+                    newVelocity = newVelocity - (workspace.CurrentCamera.CFrame.RightVector * flySpeed)
+                end
+                if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.D) then
+                    newVelocity = newVelocity + (workspace.CurrentCamera.CFrame.RightVector * flySpeed)
+                end
+
+                bodyVelocity.Velocity = newVelocity
+            end)
+        end
+    end,
+})
+
+--==[ Settings Tab ]==--
+settingsTab:CreateButton({
+    Name = "ğŸ”„ Kill's The GUI",
+      Callback = function()
+        Rayfield:Destroy()
+        task.wait(1)
+        loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+    end,
+})
+
+--==[ Credits Tab ]==--
+creditsTab:CreateLabel("Made with â¤ï¸ by MyDadsSoft")
+creditsTab:CreateLabel("UI Framework: Rayfield (Sirius Project)")
+creditsTab:CreateLabel("Special thanks to you for using it!")
