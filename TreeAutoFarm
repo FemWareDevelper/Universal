@@ -1,0 +1,162 @@
+--GAME ID: 16148053600
+--CREATED BY EVIL
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+local UserInputService = game:GetService("UserInputService")
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "AutoGui"
+ScreenGui.Parent = PlayerGui
+ScreenGui.ResetOnSpawn = false
+
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0, 190, 0, 400)
+Frame.Position = UDim2.new(0.5, -95, 0.5, -130)
+Frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+Frame.BackgroundTransparency = 0.2
+Frame.Parent = ScreenGui
+
+local dragging = false
+local dragStart, startPos
+
+Frame.InputBegan:Connect(function(input, gameProcessed)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 and not gameProcessed then
+		dragging = true
+		dragStart = input.Position
+		startPos = Frame.Position
+	end
+end)
+
+Frame.InputChanged:Connect(function(input)
+	if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+		local delta = input.Position - dragStart
+		Frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+	end
+end)
+
+Frame.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = false
+	end
+end)
+
+-- Utility function for button creation
+local function createActionPair(y, text, color, delay, callback)
+	local loopRunning = false
+	local threadRef = nil
+
+	-- Main Button
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(0, 100, 0, 30)
+	btn.Position = UDim2.new(0, 10, 0, y)
+	btn.Text = text
+	btn.BackgroundColor3 = color
+	btn.TextColor3 = Color3.new(1, 1, 1)
+	btn.Font = Enum.Font.SourceSans
+	btn.TextSize = 18
+	btn.Parent = Frame
+	btn.MouseButton1Click:Connect(callback)
+
+	-- Loop Button
+	local loopBtn = Instance.new("TextButton")
+	loopBtn.Size = UDim2.new(0, 30, 0, 30)
+	loopBtn.Position = UDim2.new(0, 115, 0, y)
+	loopBtn.Text = "Loop"
+	loopBtn.BackgroundColor3 = Color3.fromRGB(100, 255, 100)
+	loopBtn.TextColor3 = Color3.new(1, 1, 1)
+	loopBtn.Font = Enum.Font.SourceSans
+	loopBtn.TextSize = 16
+	loopBtn.Parent = Frame
+	loopBtn.MouseButton1Click:Connect(function()
+		if not loopRunning then
+			loopRunning = true
+			threadRef = coroutine.create(function()
+				while loopRunning do
+					pcall(callback)
+					wait(delay)
+				end
+			end)
+			coroutine.resume(threadRef)
+			loopBtn.Text = "Stop"
+			loopBtn.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
+		else
+			loopRunning = false
+			loopBtn.Text = "Loop"
+			loopBtn.BackgroundColor3 = Color3.fromRGB(100, 255, 100)
+		end
+	end)
+end
+
+local y = 10
+
+createActionPair(y, "Gain Tree XP", Color3.fromRGB(100, 200, 255), 0.02, function()
+	game:GetService("ReplicatedStorage").Remotes.TreeLevelSystem.XP:FireServer()
+end)
+y += 35
+
+createActionPair(y, "Level Up Tree", Color3.fromRGB(255, 200, 100), 0.4, function()
+	game:GetService("ReplicatedStorage").Remotes.TreeLevelSystem.LevelUp:FireServer()
+end)
+y += 35
+
+createActionPair(y, "Generate Fruit", Color3.fromRGB(100, 255, 100), 0.02, function()
+	game:GetService("ReplicatedStorage").Remotes.FruitHarvestSystem.Fruit:FireServer()
+end)
+y += 35
+
+createActionPair(y, "Harvest Fruit", Color3.fromRGB(200, 100, 255), 0.5, function()
+	game:GetService("ReplicatedStorage").Remotes.FruitHarvestSystem.Harvest:FireServer()
+end)
+y += 35
+
+createActionPair(y, "Second Gain", Color3.fromRGB(150, 150, 255), 0.02, function()
+	game:GetService("ReplicatedStorage").Remotes.TimeSystem.SecondGain:FireServer()
+end)
+y += 35
+
+createActionPair(y, "Free Stats (OP)", Color3.fromRGB(255, 200, 200), 0.02, function()
+	game:GetService("ReplicatedStorage").Remotes.RemoteEvent:FireServer()
+end)
+y += 35
+
+createActionPair(y, "Gain Tree Points", Color3.fromRGB(154,205,50), 0.02, function()
+	game:GetService("ReplicatedStorage").Remotes.TreePointSystem.StatGiver:FireServer()
+end)
+y += 35
+
+createActionPair(y, "Buy TP Gen", Color3.fromRGB(218,165,32), 0.1, function()
+	game:GetService("ReplicatedStorage").Remotes.TreePointSystem.TPGen:FireServer()
+end)
+y += 35
+
+createActionPair(y, "Buy Forest Gen", Color3.fromRGB(32,178,170), 0.02, function()
+	game:GetService("ReplicatedStorage").Remotes.TreePointSystem.ForestGen:FireServer()
+end)
+y += 35
+
+createActionPair(y, "Buy MForest Gen", Color3.fromRGB(153,50,204), 0.02, function()
+	game:GetService("ReplicatedStorage").Remotes.TreePointSystem.MysticForestGen:FireServer()
+end)
+y += 35
+
+createActionPair(y, "Buy Fruit Upgs", Color3.fromRGB(220,20,60), 0.1, function()
+	game:GetService("ReplicatedStorage").Remotes.FruitHarvestSystem.BuyBackpackUpg:FireServer()
+    game:GetService("ReplicatedStorage").Remotes.FruitHarvestSystem.BuyFruitUpg:FireServer()
+    game:GetService("ReplicatedStorage").Remotes.FruitHarvestSystem.BuyLeavesUpg:FireServer()
+end)
+
+-- Close Button
+local closeButton = Instance.new("TextButton")
+closeButton.Size = UDim2.new(0, 30, 0, 30)
+closeButton.Position = UDim2.new(1, -40, 0, 10)
+closeButton.Text = "X"
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.Font = Enum.Font.SourceSans
+closeButton.TextSize = 18
+closeButton.Parent = Frame
+closeButton.MouseButton1Click:Connect(function()
+	ScreenGui:Destroy()
+end)
